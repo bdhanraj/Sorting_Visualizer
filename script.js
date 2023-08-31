@@ -8,6 +8,7 @@ function disableSortingBtn(){
     document.querySelector("#bubbleSort").disabled = true;
     document.querySelector("#insertionSort").disabled = true;
     document.querySelector("#mergeSort").disabled = true;
+    document.querySelector("#heapSort").disabled = true;
     document.querySelector("#quickSort").disabled = true;
     document.querySelector("#selectionSort").disabled = true;
 }
@@ -15,6 +16,7 @@ function enableSortingBtn(){
     document.querySelector("#bubbleSort").disabled = false;
     document.querySelector("#insertionSort").disabled = false;
     document.querySelector("#mergeSort").disabled = false;
+    document.querySelector("#heapSort").disabled = false;
     document.querySelector("#quickSort").disabled = false;
     document.querySelector("#selectionSort").disabled = false;
 }
@@ -139,13 +141,13 @@ async function selection(){
 const selectionSortbtn = document.querySelector("#selectionSort");
 selectionSortbtn.addEventListener('click', async function(){
     console.log('In selection()');
+
     disableSortingBtn();
-    disableSizeSlider();
-    disableNewArrayBtn();
+    // deleted disable code
     await selection();
     enableSortingBtn();
-    enableSizeSlider();
-    enableNewArrayBtn();
+    // deleted enable code
+    
 });
 
 /**********Insertion Sort**********/
@@ -179,36 +181,39 @@ async function insertion(){
 const inSortbtn = document.querySelector("#insertionSort");
 inSortbtn.addEventListener('click', async function(){
     console.log('In insertion()');
+
     disableSortingBtn();
-    disableSizeSlider();
-    disableNewArrayBtn();
+    // deleted disable code
     await insertion();
     enableSortingBtn();
-    enableSizeSlider();
-    enableNewArrayBtn();
+    // deleted enable code
+    
 });
 
 /**********Quick Sort**********/
-
+  
 async function partitionLomuto(ele, l, r){
-    let i = l - 1;
+    let pivotvalue=parseInt(ele[r].style.height);
+    let i = l;
     ele[r].style.background = 'red';
     for(let j = l; j <= r - 1; j++){
         ele[j].style.background = 'yellow';
         await waitforme(delay);
 
-        if(parseInt(ele[j].style.height) < parseInt(ele[r].style.height)){
-            i++;
+        if(parseInt(ele[j].style.height) < pivotvalue){
             swap(ele[i], ele[j]);
             ele[i].style.background = 'orange';
-            if(i != j) ele[j].style.background = 'orange';
+            i++;
+            if(i != j) 
+            ele[j].style.background = 'orange';
             await waitforme(delay);
         }
         else{
             ele[j].style.background = 'pink';
         }
     }
-    i++; 
+    // i++; 
+    swap(ele[i],ele[r]);
     await waitforme(delay);
     ele[r].style.background = 'pink';
     ele[i].style.background = 'green';
@@ -237,20 +242,19 @@ async function quickSort(ele, l, r){
     }
 }
 
-
 const quickSortbtn = document.querySelector("#quickSort");
 quickSortbtn.addEventListener('click', async function(){
 	console.log('In quickSort()');
     let ele = document.querySelectorAll('.bar');
     let l = 0;
-    let r = ele.length - 1;
+    let r = parseInt(ele.length) - 1;
+
     disableSortingBtn();
-    disableSizeSlider();
-    disableNewArrayBtn();
+    // deleted disable code
     await quickSort(ele, l, r);
     enableSortingBtn();
-    enableSizeSlider();
-    enableNewArrayBtn();
+    // deleted enable code
+    
 });
 
 /**********Merge Sort**********/
@@ -342,11 +346,78 @@ mergeSortbtn.addEventListener('click', async function(){
     let ele = document.querySelectorAll('.bar');
     let l = 0;
     let r = parseInt(ele.length) - 1;
+
     disableSortingBtn();
-    disableSizeSlider();
-    disableNewArrayBtn();
+// deleted disable code
     await mergeSort(ele, l, r);
     enableSortingBtn();
-    enableSizeSlider();
-    enableNewArrayBtn();
+// deleted enable code
+
+});
+/**********Heap Sort**********/
+
+async function heapify(ele, n, i) {
+    var largest = i; // Initialize largest as root
+    var l = 2 * i + 1; // left = 2*i + 1
+    var r = 2 * i + 2; // right = 2*i + 2
+
+    // If left child is larger than root
+    
+    if (l < n && parseInt(ele[l].style.height) > parseInt(ele[largest].style.height)) {
+        ele[l].style.background = 'lightblue'; 
+        ele[largest].style.background = 'cyan';
+        largest = l;
+        ele[l].style.background = '#e43f5a';
+    }
+    
+
+    // If right child is larger than largest so far
+    if (r < n && parseInt(ele[r].style.height) > parseInt(ele[largest].style.height)) { 
+        ele[r].style.background = 'lightgreen';
+        ele[largest].style.background = 'cyan'; 
+        largest = r;
+        ele[l].style.background = '#e43f5a'; 
+    }
+
+    // If largest is not root
+    if (largest != i) {
+        swap(ele[i], ele[largest]);
+
+        // Recursively heapify the affected sub-tree
+        heapify(ele, n, largest);
+    }
+}
+
+async function heapSort(ele, n) {
+    // Build heap (rearrange array)
+    for (var i = Math.floor(n / 2) - 1; i >= 0; i--) {
+        await waitforme(delay);
+        await heapify(ele, n, i);
+    }
+
+    // One by one extract an element from heap
+    for (var i = n - 1; i > 0; i--) {
+        await waitforme(delay);
+        swap(ele[0], ele[i]);
+        ele[0].style.background = 'cyan';
+        ele[i].style.background = 'green';
+        await waitforme(delay);
+
+        // call max heapify on the reduced heap
+        await heapify(ele, i, 0);
+    }
+    ele[0].style.background = 'green';
+}
+
+const heapSortbtn = document.querySelector("#heapSort");
+heapSortbtn.addEventListener('click', async function(){
+	console.log('In heapSort()');
+    let ele = document.querySelectorAll('.bar');
+    let n = parseInt(ele.length);
+    disableSortingBtn();
+// deleted disable code
+    await heapSort(ele, n);
+    enableSortingBtn();
+// deleted enable code
+
 });
